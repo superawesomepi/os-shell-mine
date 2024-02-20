@@ -32,35 +32,46 @@ int main(int argc, char *argv[]) {
    			exit(0);  // exit the program if EOF is input
  		}
         cmdline[strlen(cmdline) - 1] = '\0'; // remove the newline character
-//		printf("User entered %s", cmdline);
-		char **terms = split(cmdline, " ");
-//		printf("split finished\n");
-		// print out all the tokens
-		int i = 0;
-		while (terms[i] != NULL) {
-  			printf("%s\n", terms[i]);
-  			i++;
-		}
-		// check for starting /
-		if(terms[0][0] == '/') printf("Search for full program\n");
-		else {
-			printf("checking built-in\n");
-			if(strcmp(terms[0], "exit") == 0) return 0; // exit command
-    		if(strcmp(terms[0], "pwd") == 0) { // pwd command
-				char cwd[MAXBUF];
-				getcwd(cwd, MAXBUF - 1);
-				printf("%s\n", cwd);
+		//printf("User entered %s", cmdline);
+		if(strlen(cmdline) > 0) {
+			char **terms = split(cmdline, " ");
+			//printf("split finished\n");
+			// print out all the tokens
+			// int i = 0;
+			// while (terms[i] != NULL) {
+			// 	printf("%s\n", terms[i]);
+			// 	i++;
+			// }
+			// check for starting /
+			if(terms[0][0] == '/') printf("Search for full program\n");
+			else {
+				//printf("checking built-in\n");
+				if(strcmp(terms[0], "exit") == 0) {
+					int i = 0;
+					while(terms[i] != NULL) free(terms[i++]);
+					free(terms);
+					free(cmdline);
+					return 0; // exit command
+				} 
+				if(strcmp(terms[0], "pwd") == 0) { // pwd command
+					char cwd[MAXBUF];
+					getcwd(cwd, MAXBUF - 1);
+					printf("%s\n", cwd);
+				}
+				if(strcmp(terms[0], "cd") == 0) { // cd command
+					if(terms[1] != NULL) { // this doesn't appear to work
+						chdir(terms[1]);
+						printf("changed directory to %s\n", terms[1]);
+					} else printf("no directory was entered\n");
+					
+				}
+				else; // not a built-in command
 			}
-			if(strcmp(terms[0], "cd") == 0) { // cd command
-				if(terms[1] != NULL) { // this doesn't appear to work
-					chdir(terms[1]);
-					printf("changed directory to %s\n", terms[1]);
-				} else printf("directory could not be found\n");
-				
-			}
-			else; // not a built-in command
+			int i = 0;
+			while(terms[i] != NULL) free(terms[i++]);
+			free(terms);
 		}
+		free(cmdline);
 	}
-
 	return 0;
 }
