@@ -67,6 +67,10 @@ void modeTwo(char **filepath, char **paths) {
         strcpy(filename, &filepath[0][1]);
     int path = 0;
     int found = 1;
+    int num = 0;
+    while(paths[path] != NULL) path++, num++;
+    //printf("Number of paths found is %d\n", num);
+    path = 0;
     while(paths[path] != NULL && found) {
         printf("%s ::: %s\n", paths[path], filename);
         strcat(paths[path], filename);

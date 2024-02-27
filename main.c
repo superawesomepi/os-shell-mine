@@ -27,6 +27,8 @@ int main(int argc, char *argv[]) {
 	while(1) {
 		char *cmdline1 = (char*) malloc(MAXBUF); // stores user input from commmand line
 		char *cmdline = (char*) malloc(MAXBUF);
+		printf("%s\n", getenv("PATH"));
+		char **paths = split(getenv("PATH"), ":");
 		printf("dsh> ");
 		// reads up to 256 characters into the buffer
  		if (fgets(cmdline1, MAXBUF, stdin) == NULL) {
@@ -36,7 +38,7 @@ int main(int argc, char *argv[]) {
 		removeSpaces(cmdline1, cmdline);
 		//printf("User entered %s %ld\n", cmdline, strlen(cmdline));
 		if(strlen(cmdline) > 0) {
-			char **terms = split(cmdline, " ");
+			char **terms = split(cmdline, " ");			
 			//printf("split finished\n");
 			// print out all the tokens
 			// int counts = 0;
@@ -64,6 +66,10 @@ int main(int argc, char *argv[]) {
 					int i = 0;
 					while(terms[i] != NULL) free(terms[i++]);
 					free(terms);
+					int j = 0;
+					while(paths[j] != NULL) free(paths[j++]);
+					free(paths);
+					free(cmdline1);
 					free(cmdline);
 					exit(0); // exit command
 				} 
@@ -81,12 +87,8 @@ int main(int argc, char *argv[]) {
 						printf("changed directory to home directory\n");
 					}
 				}
-				else {
-					char **paths = split(getenv("PATH"), ":");
-					modeTwo(terms, paths);
-					int i = 0;
-					while(paths[i] != NULL) free(paths[i++]);
-					free(paths);
+				else {	
+					modeTwo(terms, paths);					
 				}
 			}
 			int i = 0;
@@ -95,6 +97,9 @@ int main(int argc, char *argv[]) {
 		}
 		free(cmdline);
 		free(cmdline1);
+		int j = 0;
+		while(paths[j] != NULL) free(paths[j++]);
+		free(paths);
 	}
 	return 0;
 }
