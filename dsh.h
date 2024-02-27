@@ -6,4 +6,7 @@
 
 // TODO: Function declarations go below
 char** split(char *str, char *delim);
+void modeOne(char **filepath);
+void modeTwo(char **filepath, char **paths);
+char* removeSpaces(char *cmdlineInput, char* output);
 
