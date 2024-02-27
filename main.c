@@ -27,8 +27,9 @@ int main(int argc, char *argv[]) {
 	while(1) {
 		char *cmdline1 = (char*) malloc(MAXBUF); // stores user input from commmand line
 		char *cmdline = (char*) malloc(MAXBUF);
-		printf("%s\n", getenv("PATH"));
-		char **paths = split(getenv("PATH"), ":");
+		char *pathval = (char*) malloc(MAXBUF);
+		strcpy(pathval, getenv("PATH"));
+		char **paths = split(pathval, ":");
 		printf("dsh> ");
 		// reads up to 256 characters into the buffer
  		if (fgets(cmdline1, MAXBUF, stdin) == NULL) {

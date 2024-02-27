@@ -51,20 +51,26 @@ void modeOne(char **filepath) {
             concurrent = 1;
         }
         if(0 != fork()) { // parent
-            if(concurrent) return; // concurrent execution
+            if(concurrent) {
+                return; // concurrent execution
+            }
             else wait(NULL); // waiting
         }
         else execv(filepath[0], filepath); // child        
     } else {
-        printf("could not run requested file");
+        printf("could not run requested file\n"); // this will also trigger if there is a / instead of a ./ before a file
     }
     return;
 }
 
 void modeTwo(char **filepath, char **paths) {
     char filename[32];
-    if (filepath[0][0] == '.')
+    if (filepath[0][0] == '.' && filepath[0][1] == '/') // if the file starts with ./
         strcpy(filename, &filepath[0][1]);
+    else {
+        strcpy(filename, "/"); // otherwise there is no ./ so a / must be added
+        strcat(filename, filepath[0]);
+    }
     int path = 0;
     int found = 1;
     int num = 0;
@@ -72,24 +78,25 @@ void modeTwo(char **filepath, char **paths) {
     //printf("Number of paths found is %d\n", num);
     path = 0;
     while(paths[path] != NULL && found) {
-        printf("%s ::: %s\n", paths[path], filename);
+        //printf("%s ::: %s\n", paths[path], filename);
         strcat(paths[path], filename);
-        printf("%s ::: %s\n", paths[path], filename);
+        //printf("%s ::: %s\n", paths[path], filename);
         if (access(paths[path], F_OK | X_OK) == 0) {
-            printf("correct filepath found\n");   
+            //printf("correct filepath found\n");   
             strcpy(filepath[0], paths[path]);
-            int counts = 0;
-			while (filepath[counts] != NULL) {
-			    printf("%s\n", filepath[counts]);
-			    counts++;
-			}
+            // int counts = 0;
+			// while (filepath[counts] != NULL) {
+			//     printf("%s\n", filepath[counts]);
+			//     counts++;
+			// }
             modeOne(filepath);
             found = 0; 
+            return;
         } else {
-            printf("filepath not found\n");
             path++;
         }
     }
+    printf("%s not found!\n", filepath[0]);
     return;
 }
 
