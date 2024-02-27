@@ -26,8 +26,8 @@ int main(int argc, char *argv[]) {
 
 	while(1) {
 		char *cmdline1 = (char*) malloc(MAXBUF); // stores user input from commmand line
-		char *cmdline = (char*) malloc(MAXBUF);
-		char *pathval = (char*) malloc(MAXBUF);
+		char *cmdline = (char*) malloc(MAXBUF); // parsed cmdline
+		char *pathval = (char*) malloc(MAXBUF); // stores PATH
 		strcpy(pathval, getenv("PATH"));
 		char **paths = split(pathval, ":");
 		printf("dsh> ");
@@ -40,22 +40,6 @@ int main(int argc, char *argv[]) {
 		//printf("User entered %s %ld\n", cmdline, strlen(cmdline));
 		if(strlen(cmdline) > 0) {
 			char **terms = split(cmdline, " ");			
-			//printf("split finished\n");
-			// print out all the tokens
-			// int counts = 0;
-			// while (terms[counts] != NULL) {
-			// 	//printf("%s\n", terms[i]);
-			// 	counts++;
-			// }
-			// // create array of arguments
-			// char **args = (char**) malloc((counts) * sizeof(char*)); // create array of strings
-			// for (int i = 0; i < counts - 1; i++) { // add empty strings
-        	// 	args[i] = (char*) malloc(CAPACITY * sizeof(char));
-    		// }
-			// for(int j = 1; j < counts - 2; j++) { // fills args array with terms except the filepath
-			// 	args[j] = terms[j+1];
-			// }
-			// args[counts - 1] = NULL; //null terminate args
 			// check for starting /
 			if(terms[0][0] == '/') {
 				modeOne(terms);
@@ -63,9 +47,8 @@ int main(int argc, char *argv[]) {
 			else {
 				if(strcmp(terms[0], "exit") == 0) {
 					//printf("checking built-in: %s\n",terms[0]);
-					exit(0);
 					int i = 0;
-					while(terms[i] != NULL) free(terms[i++]);
+					while(terms[i] != NULL) free(terms[i++]); // free everything before exiting
 					free(terms);
 					int j = 0;
 					while(paths[j] != NULL) free(paths[j++]);
@@ -98,6 +81,7 @@ int main(int argc, char *argv[]) {
 		}
 		free(cmdline);
 		free(cmdline1);
+		free(pathval);
 		int j = 0;
 		while(paths[j] != NULL) free(paths[j++]);
 		free(paths);

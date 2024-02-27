@@ -24,8 +24,7 @@ char** split(char *str, char *delim) {
     for (int i = 0; str[i] != '\0'; ++i) { // determine the delimiter count
         if (*delim == str[i]) ++numTokens;
     }
-//    printf("the number of tokens is %d\n", numTokens);
-     // this creates num pointers to strings
+    // this creates num pointers to strings
     char **array = (char**) malloc((numTokens + 1) * sizeof(char*));
     // this loops through each array element and instantiates
     // an array of chars of length CAPACITY
@@ -58,15 +57,24 @@ void modeOne(char **filepath) {
         }
         else execv(filepath[0], filepath); // child        
     } else {
-        printf("could not run requested file\n"); // this will also trigger if there is a / instead of a ./ before a file
+        printf("could not run requested file\n"); // this will also trigger if there is a / instead of a ./ before a file and it's not a directory
     }
     return;
 }
 
 void modeTwo(char **filepath, char **paths) {
-    char filename[32];
-    if (filepath[0][0] == '.' && filepath[0][1] == '/') // if the file starts with ./
-        strcpy(filename, &filepath[0][1]);
+    char filename[CAPACITY];
+    if (filepath[0][0] == '.' && filepath[0][1] == '/') {// if the file starts with ./
+        getcwd(filename, CAPACITY - 1);
+        strcat(filename, &filepath[0][1]);
+        if (access(filename, F_OK | X_OK) == 0) {  
+            strcpy(filepath[0], filename);
+            modeOne(filepath); 
+        } else {
+            printf("%s not found!\n", filepath[0]);
+        }
+        return;
+    }
     else {
         strcpy(filename, "/"); // otherwise there is no ./ so a / must be added
         strcat(filename, filepath[0]);
@@ -75,24 +83,16 @@ void modeTwo(char **filepath, char **paths) {
     int found = 1;
     int num = 0;
     while(paths[path] != NULL) path++, num++;
-    //printf("Number of paths found is %d\n", num);
     path = 0;
     while(paths[path] != NULL && found) {
-        //printf("%s ::: %s\n", paths[path], filename);
         strcat(paths[path], filename);
-        //printf("%s ::: %s\n", paths[path], filename);
         if (access(paths[path], F_OK | X_OK) == 0) {
             //printf("correct filepath found\n");   
             strcpy(filepath[0], paths[path]);
-            // int counts = 0;
-			// while (filepath[counts] != NULL) {
-			//     printf("%s\n", filepath[counts]);
-			//     counts++;
-			// }
             modeOne(filepath);
             found = 0; 
             return;
-        } else {
+        } else { // wrong path, increment and try again
             path++;
         }
     }
@@ -113,6 +113,5 @@ char* removeSpaces(char *input, char *output) {
         j++;
     }
     output[k + 1 - idx] = '\0';
-    //printf("Input with no white spaces is: %sEND%d\n", output, k);
     return output;
 }
